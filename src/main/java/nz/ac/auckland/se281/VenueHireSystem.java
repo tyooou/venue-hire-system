@@ -77,22 +77,24 @@ public class VenueHireSystem {
     String[] splitDate = options[1].split("/");
     boolean dateValid = true;
 
-    if (systemDate.length() == 0) {
+    if (systemDate == "not set") {
       MessageCli.BOOKING_NOT_MADE_DATE_NOT_SET.printMessage();
     } else {
+      
       for (int index = 2; index > -1; index--) {
         if (Integer.parseInt(splitDate[index], 10) < Integer.parseInt(splitSystemDate[index], 10)) {
          dateValid = false; 
          break;
         }
       }
+
+      if (venueListSize <= 0) {
+        MessageCli.BOOKING_NOT_MADE_NO_VENUES.printMessage();
+      } else if (!dateValid) {
+        MessageCli.BOOKING_NOT_MADE_PAST_DATE.printMessage(options[1], systemDate);
+      }
     }
     
-    if (venueListSize <= 0) {
-      MessageCli.BOOKING_NOT_MADE_NO_VENUES.printMessage();
-    } else if (!dateValid) {
-      MessageCli.BOOKING_NOT_MADE_PAST_DATE.printMessage(options[1], systemDate);
-    }
   }
 
   public void printBookings(String venueCode) {
