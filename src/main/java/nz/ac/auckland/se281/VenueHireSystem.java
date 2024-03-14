@@ -11,7 +11,6 @@ public class VenueHireSystem {
   String systemDate = "not set";
   String[] splitSystemDate;
 
-
   public VenueHireSystem() {}
 
   public void printVenues() {
@@ -33,8 +32,7 @@ public class VenueHireSystem {
     }
   }
 
-  public void createVenue(
-      String venueName, String venueCode, String capacityInput, String hireFeeInput) {
+  public void createVenue(String venueName, String venueCode, String capacityInput, String hireFeeInput) {
       ArrayList<String> venueCodeList = new ArrayList<String>();
       boolean isCapacityNumber, isHireFeeNumber;
       isCapacityNumber = isHireFeeNumber = true;
@@ -74,22 +72,29 @@ public class VenueHireSystem {
   }
 
   public void makeBooking(String[] options) {
+    ArrayList<String> venueCodeList = new ArrayList<String>();
     String[] splitDate = options[1].split("/");
     boolean dateValid = true;
+
+    for (Venue item : venueDatabase) {
+      venueCodeList.add(item.getVenueCode());
+    }
 
     if (systemDate == "not set") {
       MessageCli.BOOKING_NOT_MADE_DATE_NOT_SET.printMessage();
     } else {
-      
+
       for (int index = 2; index > -1; index--) {
         if (Integer.parseInt(splitDate[index], 10) < Integer.parseInt(splitSystemDate[index], 10)) {
          dateValid = false; 
          break;
         }
       }
-
+      
       if (venueListSize <= 0) {
         MessageCli.BOOKING_NOT_MADE_NO_VENUES.printMessage();
+      } else if (!venueCodeList.contains(options[0])) {
+        MessageCli.BOOKING_NOT_MADE_VENUE_NOT_FOUND.printMessage(options[0]);
       } else if (!dateValid) {
         MessageCli.BOOKING_NOT_MADE_PAST_DATE.printMessage(options[1], systemDate);
       }
