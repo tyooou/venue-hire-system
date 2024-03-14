@@ -14,14 +14,16 @@ public class VenueHireSystem {
     String setQuantity = "are";
     String setPlural = "s";
 
-    if (venueListSize <= 0) {
+    if (venueListSize <= 0) { // If there are no venues listed.
       MessageCli.NO_VENUES.printMessage();
     } else {
       String venueListSizeString = Integer.toString(venueListSize);
+
+      // If one venue, update grammar.
       if (venueListSize == 1) { setQuantity = "is"; setPlural = ""; venueListSizeString = "one"; }
       MessageCli.NUMBER_VENUES.printMessage(setQuantity, venueListSizeString, setPlural);
 
-      for (Venue item : venueDatabase) {
+      for (Venue item : venueDatabase) { // Print list of available venues.
         MessageCli.VENUE_ENTRY.printMessage(item.venueName, item.venueCode, item.capacityInput, item.hireFeeInput);
       }
     }
@@ -34,23 +36,24 @@ public class VenueHireSystem {
       isCapacityNumber = isHireFeeNumber = true;
       String numberMessage = "";
 
-      for (Venue item : venueDatabase) { // 
+      for (Venue item : venueDatabase) { // Create list of venue codes (to check if duplicates).
         venueCodeList.add(item.getVenueCode());
       }
 
+      // Check is capacity and hire fee inputs are valid.
       try { int capacityInputInteger = Integer.parseInt(capacityInput); if (capacityInputInteger <= 0) {numberMessage = " positive"; isCapacityNumber = false; }} catch (NumberFormatException nfe) { isCapacityNumber = false; }
       try { int hireFeeInteger = Integer.parseInt(hireFeeInput); if (hireFeeInteger <= 0) {numberMessage = " positive"; isHireFeeNumber = false;}} catch (NumberFormatException nfe) { isHireFeeNumber = false; }
       
-      if (venueName.length() == 0) {
+      if (venueName.length() == 0) { // If venue name input is empty.
         MessageCli.VENUE_NOT_CREATED_EMPTY_NAME.printMessage();
-      } else if (venueCodeList.contains(venueCode)) {
+      } else if (venueCodeList.contains(venueCode)) { // If there are duplicate venue codes.
         String venueNameOfMatch = venueDatabase.get(venueCodeList.indexOf(venueCode)).getVenueName();
         MessageCli.VENUE_NOT_CREATED_CODE_EXISTS.printMessage(venueCode, venueNameOfMatch);
-      } else if (!isCapacityNumber) {
+      } else if (!isCapacityNumber) { // If the capacity input is invalid.
         MessageCli.VENUE_NOT_CREATED_INVALID_NUMBER.printMessage("capacity", numberMessage);
-      } else if (!isHireFeeNumber) {
+      } else if (!isHireFeeNumber) { // If the hire fee input is invalid.
         MessageCli.VENUE_NOT_CREATED_INVALID_NUMBER.printMessage("hire fee", numberMessage);
-      } else {
+      } else { // Add new venue to database upon successful venue input.
         venueDatabase.add(new Venue(venueName, venueCode, capacityInput, hireFeeInput));
         MessageCli.VENUE_SUCCESSFULLY_CREATED.printMessage(venueName, venueCode);
       }
