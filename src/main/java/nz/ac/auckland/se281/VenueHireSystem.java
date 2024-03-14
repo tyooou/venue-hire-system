@@ -3,7 +3,6 @@ package nz.ac.auckland.se281;
 import nz.ac.auckland.se281.Types.CateringType;
 import nz.ac.auckland.se281.Types.FloralType;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 public class VenueHireSystem {
   ArrayList<Venue> venueDatabase = new ArrayList<Venue>();
@@ -11,13 +10,21 @@ public class VenueHireSystem {
   public VenueHireSystem() {}
 
   public void printVenues() {
+    int venueListSize = venueDatabase.size();
+    String setQuantity = "are";
+    String setPlural = "s";
 
+    if (venueListSize <= 0) {
+      MessageCli.NO_VENUES.printMessage();
+    } else {
+      String venueListSizeString = Integer.toString(venueListSize);
+      if (venueListSize == 1) { setQuantity = "is"; setPlural = ""; venueListSizeString = "one"; }
+      MessageCli.NUMBER_VENUES.printMessage(setQuantity, venueListSizeString, setPlural);
 
-
-    MessageCli.NO_VENUES.printMessage();
-
-
-
+      for (Venue item : venueDatabase) {
+        MessageCli.VENUE_ENTRY.printMessage(item.venueName, item.venueCode, item.capacityInput, item.hireFeeInput);
+      }
+    }
   }
 
   public void createVenue(
