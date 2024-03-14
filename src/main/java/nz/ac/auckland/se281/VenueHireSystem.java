@@ -57,6 +57,7 @@ public class VenueHireSystem {
         MessageCli.VENUE_NOT_CREATED_INVALID_NUMBER.printMessage("hire fee", numberMessage);
       } else { // Add new venue to database upon successful venue input.
         venueDatabase.add(new Venue(venueName, venueCode, capacityInput, hireFeeInput));
+        venueListSize = venueDatabase.size();
         MessageCli.VENUE_SUCCESSFULLY_CREATED.printMessage(venueName, venueCode);
       }
   }
@@ -90,14 +91,19 @@ public class VenueHireSystem {
          break;
         }
       }
-      
+
       if (venueListSize <= 0) {
         MessageCli.BOOKING_NOT_MADE_NO_VENUES.printMessage();
-      } else if (!venueCodeList.contains(options[0])) {
-        MessageCli.BOOKING_NOT_MADE_VENUE_NOT_FOUND.printMessage(options[0]);
       } else if (!dateValid) {
         MessageCli.BOOKING_NOT_MADE_PAST_DATE.printMessage(options[1], systemDate);
+      } else if (!venueCodeList.contains(options[0])) {
+          MessageCli.BOOKING_NOT_MADE_VENUE_NOT_FOUND.printMessage(options[0]);
+      } else {
+          String bookedVenueName = venueDatabase.get(venueCodeList.indexOf(options[0])).getVenueName();
+          
+          MessageCli.MAKE_BOOKING_SUCCESSFUL.printMessage(BookingReferenceGenerator.generateBookingReference(), bookedVenueName, options[1], options[3]);
       }
+      
     }
     
   }
