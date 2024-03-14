@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 public class VenueHireSystem {
   ArrayList<Venue> venueDatabase = new ArrayList<Venue>();
+  String currentDate = "not set";
 
   public VenueHireSystem() {}
 
@@ -60,11 +61,12 @@ public class VenueHireSystem {
   }
 
   public void setSystemDate(String dateInput) {
-    // TODO implement this method
+    currentDate = dateInput;
+    MessageCli.DATE_SET.printMessage(dateInput);
   }
 
   public void printSystemDate() {
-    // TODO implement this method
+    MessageCli.CURRENT_DATE.printMessage(currentDate);
   }
 
   public void makeBooking(String[] options) {
