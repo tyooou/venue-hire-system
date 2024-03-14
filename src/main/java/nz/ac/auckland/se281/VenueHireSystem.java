@@ -39,7 +39,7 @@ public class VenueHireSystem {
       }
 
       try { int capacityInputInteger = Integer.parseInt(capacityInput); if (capacityInputInteger <= 0) {numberMessage = " positive"; isCapacityNumber = false; }} catch (NumberFormatException nfe) { isCapacityNumber = false; }
-      try { int hireFeeInteger = Integer.parseInt(hireFeeInput); if (hireFeeInteger <= 0) {numberMessage = " positive"; isCapacityNumber = false;}} catch (NumberFormatException nfe) { isHireFeeNumber = false; }
+      try { int hireFeeInteger = Integer.parseInt(hireFeeInput); if (hireFeeInteger <= 0) {numberMessage = " positive"; isHireFeeNumber = false;}} catch (NumberFormatException nfe) { isHireFeeNumber = false; }
       
       if (venueName.length() == 0) {
         MessageCli.VENUE_NOT_CREATED_EMPTY_NAME.printMessage();
