@@ -127,27 +127,36 @@ public class VenueHireSystem {
         }
       }
       
-
       if (venueDatabaseSize <= 0) {
         MessageCli.BOOKING_NOT_MADE_NO_VENUES.printMessage();
       } else if (!dateValid) {
         MessageCli.BOOKING_NOT_MADE_PAST_DATE.printMessage(options[1], systemDate);
       } else if (!venueCodeList.contains(options[0])) {
-          MessageCli.BOOKING_NOT_MADE_VENUE_NOT_FOUND.printMessage(options[0]);
+        MessageCli.BOOKING_NOT_MADE_VENUE_NOT_FOUND.printMessage(options[0]);
       } else {
-          Venue targetVenue = venueDatabase.get(venueCodeList.indexOf(options[0]));
-          String bookedVenueName = targetVenue.getVenueName();
+        Venue targetVenue = venueDatabase.get(venueCodeList.indexOf(options[0]));
+        String bookedVenueName = targetVenue.getVenueName();
 
-          if (targetVenue.getVenueBookedDates().contains(options[1])) {
-            MessageCli.BOOKING_NOT_MADE_VENUE_ALREADY_BOOKED.printMessage(bookedVenueName, options[1]);
-          } else {
-            targetVenue.bookVenue(options[1]);
-            MessageCli.MAKE_BOOKING_SUCCESSFUL.printMessage(BookingReferenceGenerator.generateBookingReference(), bookedVenueName, options[1], options[3]);
+        if (targetVenue.getVenueBookedDates().contains(options[1])) {
+          MessageCli.BOOKING_NOT_MADE_VENUE_ALREADY_BOOKED.printMessage(bookedVenueName, options[1]);
+        } else {
+          int bookedCapacity = Integer.parseInt(options[3], 10);
+          int targetCapacity = Integer.parseInt(targetVenue.getCapacityInput());
+          String bookedCapacityString = options[3];
+          String bookedReference = BookingReferenceGenerator.generateBookingReference();
+
+          if (bookedCapacity > targetCapacity) {
+            bookedCapacityString = targetVenue.getCapacityInput();
+            MessageCli.BOOKING_ATTENDEES_ADJUSTED.printMessage(options[3], bookedCapacityString, targetVenue.getCapacityInput());
+          } else if (bookedCapacity <  targetCapacity / 4) {
+            bookedCapacityString = String.valueOf(targetCapacity / 4);
+            MessageCli.BOOKING_ATTENDEES_ADJUSTED.printMessage(options[3], bookedCapacityString, targetVenue.getCapacityInput());
           }
 
-
+          targetVenue.bookVenue(options[1], bookedCapacityString, bookedReference);
+          MessageCli.MAKE_BOOKING_SUCCESSFUL.printMessage(bookedReference, bookedVenueName, options[1], bookedCapacityString);
+        }
       }
-      
     }
     
   }
