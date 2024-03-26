@@ -1,6 +1,9 @@
 package nz.ac.auckland.se281;
+import java.util.ArrayList;
+
 public class Venue {
   String venueName, venueCode, capacityInput, hireFeeInput;
+  ArrayList<String> venueBookedDates = new ArrayList<String>();
 
   public Venue(String venueName, String venueCode, String capacityInput, String hireFeeInput) {
     this.venueName = venueName;
@@ -13,6 +16,10 @@ public class Venue {
   public String getVenueCode() { return venueCode; }
   public String getCapacityInput() { return capacityInput; }
   public String getHireFeeInput() { return hireFeeInput; }
+  public ArrayList<String> getVenueBookedDates() { return venueBookedDates; }
+  public void bookVenue(String bookDate) { 
+    venueBookedDates.add(bookDate);
+  }
 
   
 
