@@ -19,20 +19,40 @@ public class VenueHireSystem {
 
   public VenueHireSystem() {}
 
+  public String convertLocalDateToString(LocalDate date) {
+    // Intialise date formatter.
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+    // Return LocalDate type as String type.
+    return date.format(formatter);
+  }
+
+  public LocalDate convertStringToLocalDate(String date) {
+    // Grab numerical values of String type date.
+    String[] dateSplit = date.split("/");
+
+    // // Intialise date formatter.
+    String dateFormat = dateSplit[2] + "-" + dateSplit[1] + "-" + dateSplit[0];
+
+    // Return String type as LocalDate type.
+    return LocalDate.parse(dateFormat);
+  }
+
   public void printVenues() {
     // Get current size of venue list.
     venueDatabaseSize = venueDatabase.size();
 
-    // Set default grammar values for multiple venues in the venue list.
+    // Set default grammar values.
     String setQuantity = "are";
     String setPlural = "s";
 
-    if (venueDatabaseSize <= 0) { // If there are no venues listed.
+    // Check if there are venues.
+    if (venueDatabaseSize <= 0) {
       MessageCli.NO_VENUES.printMessage();
-    } else { // If there are venues.
+    } else {
       String venueListSizeString = Integer.toString(venueDatabaseSize);
 
-      // If one venue, update grammar.
+      // If update grammar according to number.
       if (venueDatabaseSize == 1) { 
         setQuantity = "is"; 
         setPlural = ""; 
@@ -55,34 +75,33 @@ public class VenueHireSystem {
         venueListSizeString = "nine"; 
       }
 
-      // Print list of available venues.
+      // Print the header for the list of available venues.
       MessageCli.NUMBER_VENUES.printMessage(setQuantity, venueListSizeString, setPlural);
 
+      // Print the list of available venues.
       for (Venue item : venueDatabase) {
-        ArrayList<String> bookedDates = item.getVenueBookedDates();
-        String availableDate = convertLocalDateToString(systemDate);
-        boolean availableDateValid = false;
-        do {
-          if (!bookedDates.contains(availableDate)) {
-            availableDateValid = true;
-          } else {
-            availableDate = convertLocalDateToString(convertStringToLocalDate(availableDate).plusDays(1));
-          }
-        } while (!availableDateValid);
-        MessageCli.VENUE_ENTRY.printMessage(item.venueName, item.venueCode, item.capacityInput, item.hireFeeInput, availableDate);
+
+        if (dateSet) {
+          // Intialise variables to find earliest booking date
+          ArrayList<String> bookedDates = item.getVenueBookedDates();
+          String availableDate = convertLocalDateToString(systemDate);
+          boolean availableDateBoolean = false;
+
+          // Check if the today (system date) is available for booking. 
+          // If not, check the next day and so on until a valid date is found.
+          do {
+            if (!bookedDates.contains(availableDate)) { 
+              availableDateBoolean = true; 
+            } else { 
+              availableDate = convertLocalDateToString(convertStringToLocalDate(availableDate).plusDays(1)); 
+            }
+          } while (!availableDateBoolean);
+          MessageCli.VENUE_ENTRY.printMessage(item.venueName, item.venueCode, item.capacityInput, item.hireFeeInput, availableDate);
+        } else {
+          MessageCli.VENUE_ENTRY.printMessage(item.venueName, item.venueCode, item.capacityInput, item.hireFeeInput);
+        }
       }
     }
-  }
-
-  public String convertLocalDateToString(LocalDate date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    return date.format(formatter);
-  }
-
-  public LocalDate convertStringToLocalDate(String date) {
-    String[] dateSplit = date.split("/");
-    String dateFormat = dateSplit[2] + "-" + dateSplit[1] + "-" + dateSplit[0];
-    return LocalDate.parse(dateFormat);
   }
 
   public void createVenue(String venueName, String venueCode, String capacityInput, String hireFeeInput) {
@@ -140,6 +159,7 @@ public class VenueHireSystem {
   }
 
   public void printSystemDate() {
+    // Check if date is set.
     if (!dateSet) {
       MessageCli.CURRENT_DATE.printMessage("not set");
     } else {
@@ -151,27 +171,15 @@ public class VenueHireSystem {
     // Get current size of venue list.
     venueDatabaseSize = venueDatabase.size();
 
-    // Initialize boolean variable for date validation.
-    boolean dateValid = true;
-
     if (!dateSet) { // Check if system date is not set.
       MessageCli.BOOKING_NOT_MADE_DATE_NOT_SET.printMessage();
     } else {
+      // Initialize boolean variable to check if date is in the past.
+      boolean bookDateBoolean = (convertStringToLocalDate(options[1]).isAfter(systemDate) || convertStringToLocalDate(options[1]).isEqual(systemDate));
 
-      // Split date input for comparison.
-      String[] splitDate = options[1].split("/");
-      String[] splitSystemDate = convertLocalDateToString(systemDate).split("/");
-
-      for (int index = 2; index > -1; index--) { // Check if booking date is in the past.
-        if (Integer.parseInt(splitDate[index], 10) < Integer.parseInt(splitSystemDate[index], 10)) {
-         dateValid = false; 
-         break;
-        }
-      }
-
-      if (venueDatabaseSize <= 0) {
+      if (venueDatabaseSize <= 0) { // If there are no venues.
         MessageCli.BOOKING_NOT_MADE_NO_VENUES.printMessage();
-      } else if (!dateValid) {
+      } else if (!bookDateBoolean) { // If the date is in the past.
         MessageCli.BOOKING_NOT_MADE_PAST_DATE.printMessage(options[1], convertLocalDateToString(systemDate));
       } else if (!venueCodeList.contains(options[0])) {
         MessageCli.BOOKING_NOT_MADE_VENUE_NOT_FOUND.printMessage(options[0]);
@@ -194,6 +202,7 @@ public class VenueHireSystem {
             bookedCapacityString = String.valueOf(targetCapacity / 4);
             MessageCli.BOOKING_ATTENDEES_ADJUSTED.printMessage(options[3], bookedCapacityString, targetVenue.getCapacityInput());
           }
+
           targetVenue.bookVenue(options[1], bookedCapacityString, bookedReference);
           MessageCli.MAKE_BOOKING_SUCCESSFUL.printMessage(bookedReference, bookedVenueName, options[1], bookedCapacityString);
         }

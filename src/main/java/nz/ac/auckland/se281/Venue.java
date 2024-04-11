@@ -24,7 +24,6 @@ public class Venue {
     venueBookedDates.add(bookDate);
     venueBookedCapacity.add(bookCapacity);
     venueBookedReferences.add(bookReference);
-
   }
 
   
