@@ -2,31 +2,32 @@ package nz.ac.auckland.se281;
 import java.util.ArrayList;
 
 public class Venue {
-  String venueName, venueCode, capacityInput, hireFeeInput;
-  ArrayList<String> venueBookedDates = new ArrayList<String>();
-  ArrayList<String> venueBookedCapacity = new ArrayList<String>();
-  ArrayList<String> venueBookedReferences = new ArrayList<String>();
+  // Intialise venue variables.
+  String venueName, venueCode, capacity, hireFee;
+  ArrayList<Booking> bookings = new ArrayList<Booking>();
+  ArrayList<String> bookedDates = new ArrayList<String>();
 
-  public Venue(String venueName, String venueCode, String capacityInput, String hireFeeInput) {
+  // Set venue variables.
+  public Venue(String venueName, String venueCode, String capacity, String hireFee) {
     this.venueName = venueName;
     this.venueCode = venueCode;
-    this.capacityInput = capacityInput;
-    this.hireFeeInput = hireFeeInput;
+    this.capacity = capacity;
+    this.hireFee = hireFee;
   }
 
+  // Get venue variables.
   public String getVenueName() { return venueName; }
   public String getVenueCode() { return venueCode; }
-  public String getCapacityInput() { return capacityInput; }
-  public String getHireFeeInput() { return hireFeeInput; }
-  public ArrayList<String> getVenueBookedDates() { return venueBookedDates; }
-  public ArrayList<String> getVenueBookedReferences() { return venueBookedReferences; }
-  public void bookVenue(String bookDate, String bookCapacity, String bookReference) { 
-    venueBookedDates.add(bookDate);
-    venueBookedCapacity.add(bookCapacity);
-    venueBookedReferences.add(bookReference);
+  public String getCapacity() { return capacity; }
+  public String getHireFee() { return hireFee; }
+
+  // Get booking variables.
+  public ArrayList<Booking> getBookings() { return bookings; }
+  public ArrayList<String> getBookedDates() { return bookedDates; }
+
+  // Create booking for venue.
+  public void bookVenue(String date, String reference, String capacity) { 
+    bookedDates.add(date);
+    bookings.add(new Booking(date, reference, capacity, hireFee));
   }
-
-  
-  
-
 }

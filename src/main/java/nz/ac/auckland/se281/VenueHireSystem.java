@@ -79,26 +79,26 @@ public class VenueHireSystem {
       MessageCli.NUMBER_VENUES.printMessage(setQuantity, venueListSizeString, setPlural);
 
       // Print the list of available venues.
-      for (Venue item : venueDatabase) {
+      for (Venue venue : venueDatabase) {
 
+        // Check if the date has been set.
         if (dateSet) {
-          // Intialise variables to find earliest booking date
-          ArrayList<String> bookedDates = item.getVenueBookedDates();
+          // Intialise booking variables.
+          ArrayList<String> bookedDates = venue.getBookedDates();
           String availableDate = convertLocalDateToString(systemDate);
-          boolean availableDateBoolean = false;
+          boolean flag = false;
 
-          // Check if the today (system date) is available for booking. 
-          // If not, check the next day and so on until a valid date is found.
+          // Check if the today (system date) and future days until availability found.
           do {
             if (!bookedDates.contains(availableDate)) { 
-              availableDateBoolean = true; 
+              flag = true; 
             } else { 
               availableDate = convertLocalDateToString(convertStringToLocalDate(availableDate).plusDays(1)); 
             }
-          } while (!availableDateBoolean);
-          MessageCli.VENUE_ENTRY.printMessage(item.venueName, item.venueCode, item.capacityInput, item.hireFeeInput, availableDate);
+          } while (!flag);
+          MessageCli.VENUE_ENTRY.printMessage(venue.venueName, venue.venueCode, venue.capacity, venue.hireFee, availableDate);
         } else {
-          MessageCli.VENUE_ENTRY.printMessage(item.venueName, item.venueCode, item.capacityInput, item.hireFeeInput);
+          MessageCli.VENUE_ENTRY.printMessage(venue.venueName, venue.venueCode, venue.capacity, venue.hireFee);
         }
       }
     }
@@ -184,27 +184,28 @@ public class VenueHireSystem {
       } else if (!venueCodeList.contains(options[0])) {
         MessageCli.BOOKING_NOT_MADE_VENUE_NOT_FOUND.printMessage(options[0]);
       } else {
-        Venue targetVenue = venueDatabase.get(venueCodeList.indexOf(options[0]));
-        String bookedVenueName = targetVenue.getVenueName();
 
-        if (targetVenue.getVenueBookedDates().contains(options[1])) {
-          MessageCli.BOOKING_NOT_MADE_VENUE_ALREADY_BOOKED.printMessage(bookedVenueName, options[1]);
+        Venue venue = venueDatabase.get(venueCodeList.indexOf(options[0]));
+        String venueName = venue.getVenueName();
+        ArrayList<String> bookedDates = venue.getBookedDates();
+
+        if (bookedDates.contains(options[1])) {
+          MessageCli.BOOKING_NOT_MADE_VENUE_ALREADY_BOOKED.printMessage(venueName, options[1]);
         } else {
           int bookedCapacity = Integer.parseInt(options[3], 10);
-          int targetCapacity = Integer.parseInt(targetVenue.getCapacityInput());
+          int targetCapacity = Integer.parseInt(venue.getCapacity());
           String bookedCapacityString = options[3];
           String bookedReference = BookingReferenceGenerator.generateBookingReference();
 
           if (bookedCapacity > targetCapacity) {
-            bookedCapacityString = targetVenue.getCapacityInput();
-            MessageCli.BOOKING_ATTENDEES_ADJUSTED.printMessage(options[3], bookedCapacityString, targetVenue.getCapacityInput());
+            bookedCapacityString = venue.getCapacity();
+            MessageCli.BOOKING_ATTENDEES_ADJUSTED.printMessage(options[3], bookedCapacityString, venue.getCapacity());
           } else if (bookedCapacity <  targetCapacity / 4) {
             bookedCapacityString = String.valueOf(targetCapacity / 4);
-            MessageCli.BOOKING_ATTENDEES_ADJUSTED.printMessage(options[3], bookedCapacityString, targetVenue.getCapacityInput());
+            MessageCli.BOOKING_ATTENDEES_ADJUSTED.printMessage(options[3], bookedCapacityString, venue.getCapacity());
           }
-
-          targetVenue.bookVenue(options[1], bookedCapacityString, bookedReference);
-          MessageCli.MAKE_BOOKING_SUCCESSFUL.printMessage(bookedReference, bookedVenueName, options[1], bookedCapacityString);
+          venue.bookVenue(options[1], bookedReference, bookedCapacityString);
+          MessageCli.MAKE_BOOKING_SUCCESSFUL.printMessage(bookedReference, venueName, options[1], bookedCapacityString);
         }
       }
     }
@@ -216,35 +217,66 @@ public class VenueHireSystem {
       MessageCli.PRINT_BOOKINGS_VENUE_NOT_FOUND.printMessage(venueCode);
     } else {
       Venue venue = venueDatabase.get(venueCodeList.indexOf(venueCode));
-      ArrayList<String> bookedDatesList = venue.getVenueBookedDates();
-      ArrayList<String> bookedReferenceList = venue.getVenueBookedReferences();
-
       MessageCli.PRINT_BOOKINGS_HEADER.printMessage(venue.getVenueName());
-      if (bookedDatesList.isEmpty()) {
+
+
+      ArrayList<Booking> bookings = venue.getBookings();
+
+      if (bookings.isEmpty()) {
         MessageCli.PRINT_BOOKINGS_NONE.printMessage(venue.getVenueName());
       } else {
-        for (int index = 0; index < bookedDatesList.size(); index++) {
-          MessageCli.PRINT_BOOKINGS_ENTRY.printMessage(bookedReferenceList.get(index), bookedDatesList.get(index));
+        for (Booking booking : bookings) {
+          MessageCli.PRINT_BOOKINGS_ENTRY.printMessage(booking.getReference(), booking.getDate());
         }
       }
     }
+  }
 
+  public boolean checkReference(String reference, String serviceType) {
+    // Search if reference exists.
+    for (Venue venue : venueDatabase) {
+      ArrayList<Booking> bookings = venue.getBookings();
+      for (Booking booking : bookings) {
+        if (booking.getReference() == reference) {
+          return true;
+        }
+      }
+    }
+    
+    // Print specific prompt based on service type.
+    if (serviceType == "Invoice") {
+      MessageCli.VIEW_INVOICE_BOOKING_NOT_FOUND.printMessage(reference);
+    } else { 
+      MessageCli.SERVICE_NOT_ADDED_BOOKING_NOT_FOUND.printMessage(serviceType, reference);
+    }
 
+    return false;
   }
 
   public void addCateringService(String bookingReference, CateringType cateringType) {
-    // TODO implement this method
+    if (checkReference(bookingReference, "Catering")) {
+      
+    }
   }
 
   public void addServiceMusic(String bookingReference) {
-    // TODO implement this method
+    if (checkReference(bookingReference, "Music")) {
+      MessageCli.ADD_SERVICE_SUCCESSFUL.printMessage("Music", bookingReference);
+    }
   }
 
   public void addServiceFloral(String bookingReference, FloralType floralType) {
-    // TODO implement this method
+    if (checkReference(bookingReference, "Floral")) {
+      
+    }
   }
 
   public void viewInvoice(String bookingReference) {
-    // TODO implement this method
+    if (checkReference(bookingReference, "Invoice")) {
+      MessageCli.INVOICE_CONTENT_TOP_HALF.printMessage(bookingReference);
+
+      
+    }
+    
   }
 }
