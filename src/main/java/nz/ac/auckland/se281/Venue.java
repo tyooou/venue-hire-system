@@ -3,9 +3,9 @@ import java.util.ArrayList;
 
 public class Venue {
   // Intialise venue variables.
-  String venueName, venueCode, capacity, hireFee;
-  ArrayList<Booking> bookings = new ArrayList<Booking>();
-  ArrayList<String> bookedDates = new ArrayList<String>();
+  private String venueName, venueCode, capacity, hireFee;
+  private ArrayList<Booking> bookings = new ArrayList<Booking>();
+  private ArrayList<String> bookedDates = new ArrayList<String>();
 
   // Set venue variables.
   public Venue(String venueName, String venueCode, String capacity, String hireFee) {

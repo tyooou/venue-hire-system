@@ -4,8 +4,8 @@ import java.util.stream.IntStream;
 public class Booking {
 
   // Initialise booking variables.
-  String venue, date, reference, capacity, email, dateMade, catering, floral;
-  int[] cost = new int[4];
+  private String venue, date, reference, capacity, email, dateMade, catering, floral;
+  private int[] cost = new int[4];
 
   public Booking(String venue, String date, String reference, String capacity, String hireFee, String email, String dateMade) {
     // Set booking variables.
