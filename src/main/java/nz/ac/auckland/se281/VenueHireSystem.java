@@ -192,20 +192,20 @@ public class VenueHireSystem {
         if (bookedDates.contains(options[1])) {
           MessageCli.BOOKING_NOT_MADE_VENUE_ALREADY_BOOKED.printMessage(venueName, options[1]);
         } else {
-          int bookedCapacity = Integer.parseInt(options[3], 10);
-          int targetCapacity = Integer.parseInt(venue.getCapacity());
-          String bookedCapacityString = options[3];
-          String bookedReference = BookingReferenceGenerator.generateBookingReference();
+          String reference = BookingReferenceGenerator.generateBookingReference();
+          int venueCapacity = Integer.parseInt(venue.getCapacity());
+          int capacityInt = Integer.parseInt(options[3], 10);
+          String capacityStr = options[3];
 
-          if (bookedCapacity > targetCapacity) {
-            bookedCapacityString = venue.getCapacity();
-            MessageCli.BOOKING_ATTENDEES_ADJUSTED.printMessage(options[3], bookedCapacityString, venue.getCapacity());
-          } else if (bookedCapacity <  targetCapacity / 4) {
-            bookedCapacityString = String.valueOf(targetCapacity / 4);
-            MessageCli.BOOKING_ATTENDEES_ADJUSTED.printMessage(options[3], bookedCapacityString, venue.getCapacity());
+          if (capacityInt > venueCapacity) {
+            capacityStr = venue.getCapacity(); // Adjust to 100% of the venue capacity.
+            MessageCli.BOOKING_ATTENDEES_ADJUSTED.printMessage(options[3], capacityStr, venue.getCapacity());
+          } else if (capacityInt < (venueCapacity / 4)) {
+            capacityStr = String.valueOf(venueCapacity / 4); // Adjust to 25% of the venue capacity.
+            MessageCli.BOOKING_ATTENDEES_ADJUSTED.printMessage(options[3], capacityStr, venue.getCapacity());
           }
-          venue.bookVenue(options[1], bookedReference, bookedCapacityString);
-          MessageCli.MAKE_BOOKING_SUCCESSFUL.printMessage(bookedReference, venueName, options[1], bookedCapacityString);
+          venue.bookVenue(options[1], reference, capacityStr, options[2], convertLocalDateToString(systemDate));
+          MessageCli.MAKE_BOOKING_SUCCESSFUL.printMessage(reference, venueName, options[1], capacityStr);
         }
       }
     }
@@ -218,8 +218,6 @@ public class VenueHireSystem {
     } else {
       Venue venue = venueDatabase.get(venueCodeList.indexOf(venueCode));
       MessageCli.PRINT_BOOKINGS_HEADER.printMessage(venue.getVenueName());
-
-
       ArrayList<Booking> bookings = venue.getBookings();
 
       if (bookings.isEmpty()) {
@@ -232,13 +230,14 @@ public class VenueHireSystem {
     }
   }
 
-  public boolean checkReference(String reference, String serviceType) {
+  public Booking findReference(String reference, String serviceType) {
     // Search if reference exists.
     for (Venue venue : venueDatabase) {
       ArrayList<Booking> bookings = venue.getBookings();
       for (Booking booking : bookings) {
-        if (booking.getReference() == reference) {
-          return true;
+        System.out.println(booking.getReference());
+        if (booking.getReference().equals(reference)) {
+          return booking;
         }
       }
     }
@@ -249,33 +248,56 @@ public class VenueHireSystem {
     } else { 
       MessageCli.SERVICE_NOT_ADDED_BOOKING_NOT_FOUND.printMessage(serviceType, reference);
     }
-
-    return false;
+    return null;
   }
 
-  public void addCateringService(String bookingReference, CateringType cateringType) {
-    if (checkReference(bookingReference, "Catering")) {
-      
+  public void addCateringService(String reference, CateringType cateringType) {
+    Booking booking = findReference(reference, "Catering");
+    if (booking != null) {
+      int costOverall = Integer.parseInt(booking.getCapacity()) * cateringType.getCostPerPerson();
+      booking.setCost(1, costOverall);
+    booking.setCatering(cateringType.getName());
+      MessageCli.ADD_SERVICE_SUCCESSFUL.printMessage("Catering (" + cateringType.getName() + ")", reference);
     }
   }
 
-  public void addServiceMusic(String bookingReference) {
-    if (checkReference(bookingReference, "Music")) {
-      MessageCli.ADD_SERVICE_SUCCESSFUL.printMessage("Music", bookingReference);
+  public void addServiceMusic(String reference) {
+    Booking booking = findReference(reference, "Music");
+    if (booking != null) {
+      booking.setCost(2, 500);
+      MessageCli.ADD_SERVICE_SUCCESSFUL.printMessage("Music", reference);
     }
   }
 
-  public void addServiceFloral(String bookingReference, FloralType floralType) {
-    if (checkReference(bookingReference, "Floral")) {
-      
+  public void addServiceFloral(String reference, FloralType floralType) {
+    Booking booking = findReference(reference, "Floral");
+    if (booking != null) {
+      booking.setCost(3, floralType.getCost());
+      booking.setFloral(floralType.getName());
+      MessageCli.ADD_SERVICE_SUCCESSFUL.printMessage("Floral (" + floralType.getName() + ")", reference);
     }
   }
 
-  public void viewInvoice(String bookingReference) {
-    if (checkReference(bookingReference, "Invoice")) {
-      MessageCli.INVOICE_CONTENT_TOP_HALF.printMessage(bookingReference);
+  public void viewInvoice(String reference) {
+    Booking booking = findReference(reference, "Invoice");
+    if (booking != null) {
+      int[] cost = booking.getCost();
+      MessageCli.INVOICE_CONTENT_TOP_HALF.printMessage(reference, booking.getEmail(), booking.getDateMade(), booking.getDate(), booking.getCapacity(), booking.getVenue());
+      MessageCli.INVOICE_CONTENT_VENUE_FEE.printMessage(String.valueOf(cost[0]));
 
-      
+      if (cost[1] > 0) {
+        MessageCli.INVOICE_CONTENT_CATERING_ENTRY.printMessage(booking.getCatering(), String.valueOf(cost[1]));
+      }
+      if (cost[2] > 0) {
+        MessageCli.INVOICE_CONTENT_MUSIC_ENTRY.printMessage(String.valueOf(cost[2]));
+      }
+      if (cost[3] > 0) {
+        MessageCli.INVOICE_CONTENT_FLORAL_ENTRY.printMessage(booking.getFloral(), String.valueOf(cost[3]));
+      }
+
+      MessageCli.INVOICE_CONTENT_BOTTOM_HALF.printMessage(String.valueOf(booking.getTotalCost()));
+
+
     }
     
   }

@@ -26,8 +26,8 @@ public class Venue {
   public ArrayList<String> getBookedDates() { return bookedDates; }
 
   // Create booking for venue.
-  public void bookVenue(String date, String reference, String capacity) { 
+  public void bookVenue(String date, String reference, String capacity, String email, String dateMade) { 
     bookedDates.add(date);
-    bookings.add(new Booking(date, reference, capacity, hireFee));
+    bookings.add(new Booking(venueName, date, reference, capacity, hireFee, email, dateMade));
   }
 }
