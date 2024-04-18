@@ -18,5 +18,4 @@ public abstract class Service {
   public void printConfirmation(Booking booking) {
     MessageCli.ADD_SERVICE_SUCCESSFUL.printMessage(name, booking.getReference());
   }
-  ;
 }
