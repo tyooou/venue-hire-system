@@ -1,4 +1,5 @@
 package nz.ac.auckland.se281;
+
 import java.util.ArrayList;
 
 public class Venue {
@@ -16,17 +17,34 @@ public class Venue {
   }
 
   // Get venue variables.
-  public String getVenueName() { return venueName; }
-  public String getVenueCode() { return venueCode; }
-  public String getCapacity() { return capacity; }
-  public String getHireFee() { return hireFee; }
+  public String getVenueName() {
+    return venueName;
+  }
+
+  public String getVenueCode() {
+    return venueCode;
+  }
+
+  public String getCapacity() {
+    return capacity;
+  }
+
+  public String getHireFee() {
+    return hireFee;
+  }
 
   // Get booking variables.
-  public ArrayList<Booking> getBookings() { return bookings; }
-  public ArrayList<String> getBookedDates() { return bookedDates; }
+  public ArrayList<Booking> getBookings() {
+    return bookings;
+  }
+
+  public ArrayList<String> getBookedDates() {
+    return bookedDates;
+  }
 
   // Create booking for venue.
-  public void bookVenue(String date, String reference, String capacity, String email, String dateMade) { 
+  public void bookVenue(
+      String date, String reference, String capacity, String email, String dateMade) {
     bookedDates.add(date);
     bookings.add(new Booking(venueName, date, reference, capacity, hireFee, email, dateMade));
   }
