@@ -286,6 +286,7 @@ public class VenueHireSystem {
     // Get booking by reference.
     Booking booking = findReference(reference, "Catering");
 
+    // If booking is found;
     if (booking != null) {
       Catering cateringService = new Catering(cateringType);
       cateringService.addCost(booking);
