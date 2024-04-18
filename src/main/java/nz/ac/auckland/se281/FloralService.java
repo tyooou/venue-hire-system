@@ -1,10 +1,10 @@
 package nz.ac.auckland.se281;
 
 // Floral extension of the Service object.
-public class Floral extends Service {
+public class FloralService extends Service {
 
   // Create Service object with Floral extension.
-  public Floral(Types.FloralType type) {
+  public FloralService(Types.FloralType type) {
     super("Floral (" + type.getName() + ")", type.getName(), type.getCost());
   }
 

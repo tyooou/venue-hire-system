@@ -1,10 +1,10 @@
 package nz.ac.auckland.se281;
 
 // Music extension of the Service object.
-public class Music extends Service {
+public class MusicService extends Service {
 
   // Create Service object with Music extension.
-  public Music() {
+  public MusicService() {
     super("Music", "Default", 500);
   }
 

@@ -2,8 +2,8 @@ package nz.ac.auckland.se281;
 
 public abstract class Service {
   // Initialise service variables
-  String name, type;
-  int cost;
+  protected String name, type;
+  protected int cost;
 
   // Initialise service variables with Service object.
   public Service(String name, String type, int cost) {
@@ -14,13 +14,9 @@ public abstract class Service {
 
   // Intialise cost and service confirmation methods.
   public abstract void addCost(Booking booking);
+
   public void printConfirmation(Booking booking) {
     MessageCli.ADD_SERVICE_SUCCESSFUL.printMessage(name, booking.getReference());
-  };
-  
-
-
-
-
-  
+  }
+  ;
 }

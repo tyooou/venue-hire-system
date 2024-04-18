@@ -8,13 +8,13 @@ import nz.ac.auckland.se281.Types.FloralType;
 
 public class VenueHireSystem {
   // Venue database variables.
-  ArrayList<Venue> venueDatabase = new ArrayList<Venue>();
-  ArrayList<String> venueCodeList = new ArrayList<String>();
-  int venueDatabaseSize;
+  private ArrayList<Venue> venueDatabase = new ArrayList<Venue>();
+  private ArrayList<String> venueCodeList = new ArrayList<String>();
+  private int venueDatabaseSize;
 
   // Initialise system date variables.
-  LocalDate systemDate;
-  boolean dateSet = false;
+  private LocalDate systemDate;
+  private boolean dateSet = false;
 
   public VenueHireSystem() {}
 
@@ -307,7 +307,7 @@ public class VenueHireSystem {
 
     // If booking is found;
     if (booking != null) {
-      Catering cateringService = new Catering(cateringType);
+      CateringService cateringService = new CateringService(cateringType);
       cateringService.addCost(booking);
       cateringService.printConfirmation(booking);
     }
@@ -319,7 +319,7 @@ public class VenueHireSystem {
 
     // If booking is found.
     if (booking != null) {
-      Music musicService = new Music();
+      MusicService musicService = new MusicService();
       musicService.addCost(booking);
       musicService.printConfirmation(booking);
     }
@@ -330,7 +330,7 @@ public class VenueHireSystem {
     Booking booking = findReference(reference, "Floral");
 
     if (booking != null) {
-      Floral floralService = new Floral(floralType);
+      FloralService floralService = new FloralService(floralType);
       floralService.addCost(booking);
       floralService.printConfirmation(booking);
     }

@@ -1,10 +1,10 @@
 package nz.ac.auckland.se281;
 
 // Catering extension of the Service object.
-public class Catering extends Service {
+public class CateringService extends Service {
 
   // Create Service object with Catering extension.
-  public Catering(Types.CateringType type) {
+  public CateringService(Types.CateringType type) {
     super("Catering (" + type.getName() + ")", type.getName(), type.getCostPerPerson());
   }
 
